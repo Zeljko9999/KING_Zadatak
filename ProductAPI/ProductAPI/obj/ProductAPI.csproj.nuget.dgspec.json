@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\zeljk\\Desktop\\KINGICT\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj": {}
+    "C:\\Users\\zeljk\\Desktop\\king\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\zeljk\\Desktop\\KINGICT\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj": {
+    "C:\\Users\\zeljk\\Desktop\\king\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zeljk\\Desktop\\KINGICT\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj",
+        "projectUniqueName": "C:\\Users\\zeljk\\Desktop\\king\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj",
         "projectName": "ProductAPI",
-        "projectPath": "C:\\Users\\zeljk\\Desktop\\KINGICT\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj",
+        "projectPath": "C:\\Users\\zeljk\\Desktop\\king\\KING_Zadatak\\ProductAPI\\ProductAPI\\ProductAPI.csproj",
         "packagesPath": "C:\\Users\\zeljk\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zeljk\\Desktop\\KINGICT\\KING_Zadatak\\ProductAPI\\ProductAPI\\obj\\",
+        "outputPath": "C:\\Users\\zeljk\\Desktop\\king\\KING_Zadatak\\ProductAPI\\ProductAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\zeljk\\AppData\\Roaming\\NuGet\\NuGet.Config",

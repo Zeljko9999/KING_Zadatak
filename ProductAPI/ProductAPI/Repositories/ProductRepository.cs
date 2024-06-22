@@ -155,7 +155,7 @@ namespace ProductAPI.Repositories
         {
             try
             {
-                var response = await _httpClient.GetAsync($"/products/category/{keyword}");
+                var response = await _httpClient.GetAsync($"/products/search?q={keyword}");
 
                 if (response.IsSuccessStatusCode)
                 {

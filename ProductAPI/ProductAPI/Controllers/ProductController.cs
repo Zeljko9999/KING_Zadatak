@@ -17,6 +17,8 @@ namespace ProductAPI.Controllers
             this._productLogic = productLogic;
         }
 
+        // Endpoint GetAllProducts gets list of all products with short details about them
+        // Example of GET request: http://localhost:5077/api/product
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -24,6 +26,10 @@ namespace ProductAPI.Controllers
             return Ok(products);
         }
 
+        // Endpoint GetProductById gets all details about one product that is seacrhed by product ID (integer)
+        // Example of GET request: http://localhost:5077/api/product/2
+        // If the product with the requested ID does not exist, we will receive
+        // a response message that the product with the requested ID does not exist
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
@@ -38,6 +44,9 @@ namespace ProductAPI.Controllers
             };
         }
 
+        //Endpoint GetProductsByCategoryAndMaxPrice filters products by category (string) and maximum price (double).
+        //Some of categories are: beauty, fragrances, furniture, groceries, ...
+        //Example of GET request: http://localhost:5077/api/product/filter?category=beauty&maxPrice=20
         [HttpGet("filter")]
         public async Task<IActionResult> GetProductsByCategoryAndMaxPrice([FromQuery] string category, [FromQuery] double maxPrice)
         {
@@ -52,12 +61,15 @@ namespace ProductAPI.Controllers
             }
         }
 
+        //Endpoint GetProductsByKeyword searches and gets products by keyword (string).
+        //For example word "laptop" will retreive all products related to laptops
+        //Example of GET request: http://localhost:5077/api/product/search?keyword=laptop
         [HttpGet("search")]
-        public async Task<IActionResult> GetProductsByKeyword([FromQuery] string q)
+        public async Task<IActionResult> GetProductsByKeyword([FromQuery] string keyword)
         {
             try
             {
-                var products = await _productLogic.GetProductsByWord(q);
+                var products = await _productLogic.GetProductsByWord(keyword);
                 return Ok(products);
             }
             catch (UserErrorMessage ex)
