@@ -29,6 +29,8 @@ builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("D
 
 builder.Services.AddControllers();
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddHttpClient<IProductRepository, ProductRepository>((provider, client) =>
 {
     var apiConfig = provider.GetRequiredService<IOptions<ApiConfiguration>>().Value;
