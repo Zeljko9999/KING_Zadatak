@@ -23,6 +23,12 @@ namespace ProductAPI.Controllers
             _logger = logger;
         }
 
+        // Endpoint Login do login into system. Example of testing user (all users can get on dummyjson API):
+        // username: emilys 
+        // password: emilyspass
+        // Login endpoint generates user's data. Most important data is token which sends to authorizing.
+        // Authorizing is automated (scripted) process, users have nothing to do. After authorizing User can use product endpoints
+        // Example of POST request: http://localhost:5077/api/product/login
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] Login loginRequest)
         {
