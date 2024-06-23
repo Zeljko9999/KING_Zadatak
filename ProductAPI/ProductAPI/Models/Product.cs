@@ -27,4 +27,28 @@ namespace ProductAPI.Models
         public List<string> images { get; set; }
         public string thumbnail { get; set; }
     }
+
+    public class Dimensions
+    {
+        public double width { get; set; }
+        public double height { get; set; }
+        public double depth { get; set; }
+    }
+
+    public class Meta
+    {
+        public DateTime createdAt { get; set; }
+        public DateTime updatedAt { get; set; }
+        public string barcode { get; set; }
+        public string qrCode { get; set; }
+    }
+
+    public class Review
+    {
+        public int rating { get; set; }
+        public string comment { get; set; }
+        public DateTime date { get; set; }
+        public string reviewerName { get; set; }
+        public string reviewerEmail { get; set; }
+    }
 }

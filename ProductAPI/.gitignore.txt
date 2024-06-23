@@ -1,0 +1,56 @@
+# Ignore Visual Studio temporary files, build results, and
+# folder config file for VS Code.
+.vs/
+.vscode/
+*.vsidx
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files
+*.rsuser
+*.rsui
+
+# Auto-generated files
+Generated\
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Include if you have either a C++ or C# project that results in this file
+*.dll
+
+# Include if you have a project file and references like C# or VB.Net
+*.pdb
+*.exe
+
+# Include if you have NuGet Packages folder (only for packages.config)
+packages/
+.nuget/
+
+# Uncomment if you have such files in your project directory
+# backup folders
+**/_backup/
+**/backup/
+
+# Log files
+*.log
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file for VS Code
+.vscode/
+
+# IDE-specific
+.idea/

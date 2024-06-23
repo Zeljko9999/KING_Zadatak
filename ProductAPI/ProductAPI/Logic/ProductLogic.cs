@@ -8,19 +8,16 @@ using ProductAPI.Logic.Interfaces;
 using ProductAPI.Controllers.DTO;
 using System;
 using ProductAPI.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ProductAPI.Logic
 {
     public class ProductLogic : IProductLogic
     {
         private readonly IProductRepository _productRepository;
-        //private readonly ValidationConfiguration _validationConfiguration;
 
-        public ProductLogic(IProductRepository productRepository/*, IOptions<ValidationConfiguration> configuration*/)
+        public ProductLogic(IProductRepository productRepository)
         {
             _productRepository = productRepository;
-            //_validationConfiguration = configuration.Value;
         }
 
         public async Task<List<ProductDTO>> GetProducts()

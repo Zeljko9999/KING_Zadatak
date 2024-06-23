@@ -26,12 +26,25 @@ builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
 
 builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("DataSources:Api"));
 
-
 builder.Services.AddControllers();
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 builder.Services.AddHttpClient<IProductRepository, ProductRepository>((provider, client) =>
+{
+    var apiConfig = provider.GetRequiredService<IOptions<ApiConfiguration>>().Value;
+    client.BaseAddress = new Uri(apiConfig.BaseUrl);
+});
+
+builder.Services.AddHttpClient<IAuthRepository, AuthRepository>((provider, client) =>
 {
     var apiConfig = provider.GetRequiredService<IOptions<ApiConfiguration>>().Value;
     client.BaseAddress = new Uri(apiConfig.BaseUrl);
@@ -42,6 +55,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductLogic, ProductLogic>();
+builder.Services.AddScoped<IAuthLogic, AuthLogic>();
 
 var app = builder.Build();
 
@@ -51,6 +65,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseSession();
+
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseAuthorization();
 

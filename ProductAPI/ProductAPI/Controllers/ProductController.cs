@@ -18,10 +18,17 @@ namespace ProductAPI.Controllers
         }
 
         // Endpoint GetAllProducts gets list of all products with short details about them
+        // If User is not logged in & authorized, endpoint will return Notauthorized message
         // Example of GET request: http://localhost:5077/api/product
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
+            var user = HttpContext.Items["User"] as User;
+            if (user == null)
+            {
+                return Unauthorized("User not authorized");
+            }
+
             var products = await _productLogic.GetProducts();
             return Ok(products);
         }
@@ -30,9 +37,16 @@ namespace ProductAPI.Controllers
         // Example of GET request: http://localhost:5077/api/product/2
         // If the product with the requested ID does not exist, we will receive
         // a response message that the product with the requested ID does not exist
+        // If User is not logged in & authorized, endpoint will return Notauthorized message
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
+            var user = HttpContext.Items["User"] as User;
+            if (user == null)
+            {
+                return Unauthorized("User not authorized");
+            }
+
             var product = await _productLogic.GetProduct(id);
             if (product is null)
             {
@@ -47,9 +61,16 @@ namespace ProductAPI.Controllers
         //Endpoint GetProductsByCategoryAndMaxPrice filters products by category (string) and maximum price (double).
         //Some of categories are: beauty, fragrances, furniture, groceries, ...
         //Example of GET request: http://localhost:5077/api/product/filter?category=beauty&maxPrice=20
+        // If User is not logged in & authorized, endpoint will return Notauthorized message
         [HttpGet("filter")]
         public async Task<IActionResult> GetProductsByCategoryAndMaxPrice([FromQuery] string category, [FromQuery] double maxPrice)
         {
+            var user = HttpContext.Items["User"] as User;
+            if (user == null)
+            {
+                return Unauthorized("User not authorized");
+            }
+
             try
             {
                 var products = await _productLogic.GetProductsByCategoryAndPrice(category, maxPrice);
@@ -64,9 +85,16 @@ namespace ProductAPI.Controllers
         //Endpoint GetProductsByKeyword searches and gets products by keyword (string).
         //For example word "laptop" will retreive all products related to laptops
         //Example of GET request: http://localhost:5077/api/product/search?keyword=laptop
+        // If User is not logged in & authorized, endpoint will return Notauthorized message
         [HttpGet("search")]
         public async Task<IActionResult> GetProductsByKeyword([FromQuery] string keyword)
         {
+            var user = HttpContext.Items["User"] as User;
+            if (user == null)
+            {
+                return Unauthorized("User not authorized");
+            }
+
             try
             {
                 var products = await _productLogic.GetProductsByWord(keyword);
