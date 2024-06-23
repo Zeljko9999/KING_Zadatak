@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProductAPI.Exceptions;
 using ProductAPI.Logic.Interfaces;
 using ProductAPI.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ProductAPI.Controllers
 {
@@ -11,10 +12,12 @@ namespace ProductAPI.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductLogic _productLogic;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IProductLogic productLogic)
+        public ProductController(IProductLogic productLogic, ILogger<ProductController> logger)
         {
             this._productLogic = productLogic;
+            _logger = logger;
         }
 
         // Endpoint GetAllProducts gets list of all products with short details about them
@@ -26,8 +29,11 @@ namespace ProductAPI.Controllers
             var user = HttpContext.Items["User"] as User;
             if (user == null)
             {
+                _logger.LogWarning("Unauthorized access attempt to GetAllProducts");
                 return Unauthorized("User not authorized");
             }
+
+            _logger.LogInformation("User {Username} requested all products", user.username);
 
             var products = await _productLogic.GetProducts();
             return Ok(products);
@@ -44,12 +50,15 @@ namespace ProductAPI.Controllers
             var user = HttpContext.Items["User"] as User;
             if (user == null)
             {
+                _logger.LogWarning("Unauthorized access attempt to GetProductById");
                 return Unauthorized("User not authorized");
             }
 
+            _logger.LogInformation("User {Username} requested product with ID {ProductId}", user.username, id);
             var product = await _productLogic.GetProduct(id);
             if (product is null)
             {
+                _logger.LogWarning("Product with ID {ProductId} not found", id);
                 return NotFound($"Could not find an product with ID = {id}");
             }
             else
@@ -68,8 +77,11 @@ namespace ProductAPI.Controllers
             var user = HttpContext.Items["User"] as User;
             if (user == null)
             {
+                _logger.LogWarning("Unauthorized access attempt to GetProductsByCategoryAndMaxPrice");
                 return Unauthorized("User not authorized");
             }
+
+            _logger.LogInformation("User {Username} requested products by category {Category} and max price {MaxPrice}", user.username, category, maxPrice);
 
             try
             {
@@ -78,6 +90,7 @@ namespace ProductAPI.Controllers
             }
             catch (UserErrorMessage ex)
             {
+                _logger.LogError(ex, "Error occurred while getting products by category {Category} and max price {MaxPrice}", category, maxPrice);
                 return BadRequest(ex.Message);
             }
         }
@@ -92,8 +105,11 @@ namespace ProductAPI.Controllers
             var user = HttpContext.Items["User"] as User;
             if (user == null)
             {
+                _logger.LogWarning("Unauthorized access attempt to GetProductsByKeyword");
                 return Unauthorized("User not authorized");
             }
+
+            _logger.LogInformation("User {Username} requested products by keyword {Keyword}", user.username, keyword);
 
             try
             {
@@ -102,6 +118,7 @@ namespace ProductAPI.Controllers
             }
             catch (UserErrorMessage ex)
             {
+                _logger.LogError(ex, "Error occurred while getting products by keyword {Keyword}", keyword);
                 return BadRequest(ex.Message);
             }
         }

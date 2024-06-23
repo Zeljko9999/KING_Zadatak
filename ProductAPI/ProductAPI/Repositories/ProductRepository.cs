@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using ProductAPI.Models;
+﻿using ProductAPI.Models;
 using ProductAPI.Exceptions;
 using ProductAPI.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,6 @@ using System.Text.Json;
 using ProductAPI.Repositories.Interfaces;
 using ProductAPI.Controllers.DTO;
 using System;
-using Azure.Core;
 using Microsoft.Identity.Client;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -20,18 +18,22 @@ namespace ProductAPI.Repositories
         private readonly HttpClient _httpClient;
 
         private readonly IMemoryCache _cache;
-        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5);
+        private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(5); // Duration of cache in minutes
+        private readonly ILogger<ProductRepository> _logger;
 
         // private readonly ProductAPIContext db;
 
-        public ProductRepository(HttpClient httpClient, IMemoryCache cache /*, ProductAPIContext context*/)
+        public ProductRepository(HttpClient httpClient, IMemoryCache cache, ILogger<ProductRepository> logger
+                                   /*, ProductAPIContext context*/)
         {
             _httpClient = httpClient;
             _cache = cache;
+            _logger = logger;
+
             //db = context;
         }
 
-        //caching response data
+        //Caching response data
         private async Task<T> GetOrAddCache<T>(string cacheKey, Func<Task<T>> value)
         {
             if (!_cache.TryGetValue(cacheKey, out T cacheEntry))
@@ -56,6 +58,7 @@ namespace ProductAPI.Repositories
 
                         if (string.IsNullOrEmpty(results))
                         {
+                            _logger.LogWarning("Empty or invalid response received from API for GetAllProducts.");
                             throw new UserErrorMessage("Empty or invalid response received from API.");
                         }
 
@@ -63,6 +66,7 @@ namespace ProductAPI.Repositories
 
                         if (productResponse == null || productResponse.products == null)
                         {
+                            _logger.LogWarning("No products found in the response for GetAllProducts.");
                             throw new UserErrorMessage("No products found in the response.");
                         }
 
@@ -79,12 +83,14 @@ namespace ProductAPI.Repositories
                     }
                     else
                     {
-                        throw new UserErrorMessage("No response.");
+                        _logger.LogWarning("No response received from API for GetAllProducts.");
+                        throw new UserErrorMessage("No response received from API.");
                     }
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred in GetAllProducts: {ErrorMessage}", ex.Message);
                 throw new UserErrorMessage($"An error occurred: {ex.Message}");
             }
         }
@@ -94,21 +100,24 @@ namespace ProductAPI.Repositories
             try
             {
                 return await GetOrAddCache($"product_{id}", async () =>
-                { 
+                {
                     var response = await _httpClient.GetAsync($"/products/{id}");
+
                     if (response.IsSuccessStatusCode)
                     {
                         var results = await response.Content.ReadAsStringAsync();
 
                         if (string.IsNullOrEmpty(results))
                         {
+                            _logger.LogWarning("Empty or invalid response received from API for GetProductById: {ProductId}", id);
                             throw new UserErrorMessage("Empty or invalid response received from API.");
                         }
 
-                        var product= JsonSerializer.Deserialize<Product>(results);
+                        var product = JsonSerializer.Deserialize<Product>(results);
 
                         if (product == null)
                         {
+                            _logger.LogWarning("No product found in the response for GetProductById: {ProductId}", id);
                             throw new UserErrorMessage("No product found in the response.");
                         }
 
@@ -116,12 +125,14 @@ namespace ProductAPI.Repositories
                     }
                     else
                     {
-                        throw new UserErrorMessage($"No response for an product with Id = {id}.");
+                        _logger.LogWarning("No response received from API for GetProductById: {ProductId}. Status code: {StatusCode}", id, response.StatusCode);
+                        throw new UserErrorMessage($"No response received from API for an product with Id = {id}.");
                     }
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred in GetProductById: {ProductId}. Error: {ErrorMessage}", id, ex.Message);
                 throw new UserErrorMessage($"An error occurred: {ex.Message}");
             }
         }
@@ -140,6 +151,7 @@ namespace ProductAPI.Repositories
 
                         if (string.IsNullOrEmpty(results))
                         {
+                            _logger.LogWarning("Empty or invalid response received from API for GetProductsByCategoryAndMaxPrice. Category: {Category}, MaxPrice: {MaxPrice}", category, maxPrice);
                             throw new UserErrorMessage("Empty or invalid response received from API.");
                         }
 
@@ -147,6 +159,7 @@ namespace ProductAPI.Repositories
 
                         if (productResponse?.products == null)
                         {
+                            _logger.LogWarning("No products found in the response for GetProductsByCategoryAndMaxPrice. Category: {Category}, MaxPrice: {MaxPrice}", category, maxPrice);
                             throw new UserErrorMessage("No products found in the response.");
                         }
 
@@ -166,12 +179,14 @@ namespace ProductAPI.Repositories
                     }
                     else
                     {
-                        throw new UserErrorMessage($"No response.");
+                        _logger.LogWarning("No response received from API for GetProductsByCategoryAndMaxPrice. Category: {Category}, MaxPrice: {MaxPrice}. Status code: {StatusCode}", category, maxPrice, response.StatusCode);
+                        throw new UserErrorMessage($"No response received from API for category '{category}' and maximum price '{maxPrice}'.");
                     }
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred in GetProductsByCategoryAndMaxPrice. Category: {Category}, MaxPrice: {MaxPrice}. Error: {ErrorMessage}", category, maxPrice, ex.Message);
                 throw new UserErrorMessage($"An error occurred: {ex.Message}");
             }
         }
@@ -190,6 +205,7 @@ namespace ProductAPI.Repositories
 
                         if (string.IsNullOrEmpty(results))
                         {
+                            _logger.LogWarning("Empty or invalid response received from API for GetProductsByKeyword. Keyword: {Keyword}", keyword);
                             throw new UserErrorMessage("Empty or invalid response received from API.");
                         }
 
@@ -197,6 +213,7 @@ namespace ProductAPI.Repositories
 
                         if (searchResponse?.products == null)
                         {
+                            _logger.LogWarning("No products found in the response for GetProductsByKeyword. Keyword: {Keyword}", keyword);
                             throw new UserErrorMessage("No products found in the response.");
                         }
 
@@ -213,12 +230,14 @@ namespace ProductAPI.Repositories
                     }
                     else
                     {
-                        throw new UserErrorMessage("No response.");
+                        _logger.LogWarning("No response received from API for GetProductsByKeyword. Keyword: {Keyword}. Status code: {StatusCode}", keyword, response.StatusCode);
+                        throw new UserErrorMessage($"No response received from API for keyword '{keyword}'.");
                     }
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred in GetProductsByKeyword. Keyword: {Keyword}. Error: {ErrorMessage}", keyword, ex.Message);
                 throw new UserErrorMessage($"An error occurred: {ex.Message}");
             }
         }
